@@ -1,0 +1,40 @@
+package com.zaalima.fintech.service.impl;
+
+import com.zaalima.fintech.entity.Account;
+import com.zaalima.fintech.entity.Transaction;
+import com.zaalima.fintech.repository.TransactionRepository;
+import com.zaalima.fintech.service.LedgerService;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Service
+public class LedgerServiceImpl implements LedgerService {
+
+    private final TransactionRepository transactionRepository;
+
+    public LedgerServiceImpl(TransactionRepository transactionRepository) {
+        this.transactionRepository = transactionRepository;
+    }
+
+    @Override
+    public void recordDebit(Account account, Transaction transaction, BigDecimal amount) {
+        account.applyBalance(account.getBalance().subtract(amount));
+    }
+
+    @Override
+    public void recordCredit(Account account, Transaction transaction, BigDecimal amount) {
+        account.applyBalance(account.getBalance().add(amount));
+    }
+
+    @Override
+    public List<Transaction> getTransactionHistory(Long userId) {
+        return transactionRepository.findAll();
+    }
+
+    @Override
+    public BigDecimal calculateBalance(Account account) {
+        return account.getBalance();
+    }
+}
